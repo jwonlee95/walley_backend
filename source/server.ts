@@ -3,10 +3,21 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import logging from './config/logging';
 import config from './config/config';
-import sampleRoutes from './routes/sample';
+import bookRoutes from './routes/book';
+import mongoose from 'mongoose';
 
 const NAMESPACE = 'Server';
 const router = express();
+
+/** Connect to Mongo */
+mongoose
+    .connect('mongodb+srv://superuser:qlalfqjsgh@walley.zxrjz.mongodb.net/Data')
+    .then((result) => {
+        logging.info(NAMESPACE, 'Mongo Connected');
+    })
+    .catch((error) => {
+        logging.error(NAMESPACE, error.message, error);
+    });
 
 /** Log the request */
 router.use((req, res, next) => {
@@ -39,7 +50,7 @@ router.use((req, res, next) => {
 });
 
 /** Routes go here */
-router.use('/api/sample', sampleRoutes);
+router.use('/api/books', bookRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {
