@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import logging from '../config/logging';
-import IBook from '../interfaces/book';
+import { IBook, IExpense } from '../interfaces/book';
 
 const BookSchema: Schema = new Schema(
     {

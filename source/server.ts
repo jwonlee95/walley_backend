@@ -4,6 +4,7 @@ import express from 'express';
 import logging from './config/logging';
 import config from './config/config';
 import bookRoutes from './routes/book';
+import expenseRoutes from './routes/expense';
 import mongoose from 'mongoose';
 
 const NAMESPACE = 'Server';
@@ -51,6 +52,7 @@ router.use((req, res, next) => {
 
 /** Routes go here */
 router.use('/api/books', bookRoutes);
+router.use('/api/expense', expenseRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {
