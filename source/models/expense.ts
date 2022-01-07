@@ -15,7 +15,7 @@ const ExpenseSchema: Schema = new Schema(
 );
 
 ExpenseSchema.post<IExpense>('save', function () {
-    logging.info('Mongo', 'Checkout the book we just saved: ', this);
+    logging.info(this);
 });
 
 export default mongoose.model<IExpense>('Expense', ExpenseSchema);

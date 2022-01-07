@@ -1,42 +1,33 @@
-const info = (namespace: string, message: string, object?: any) => {
-    if (object) {
-        console.info(`[${getTimeStamp()}] [INFO] [${namespace}] ${message}`, object);
+const DEFAULT_NAMESPACE = 'Server';
+
+const info = (message: any, namespace?: string) => {
+    if (typeof message === 'string') {
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [INFO] ${message}`);
     } else {
-        console.info(`[${getTimeStamp()}] [INFO] [${namespace}] ${message}`);
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [INFO]`, message);
     }
 };
 
-const warn = (namespace: string, message: string, object?: any) => {
-    if (object) {
-        console.warn(`[${getTimeStamp()}] [WARN] [${namespace}] ${message}`, object);
+const warn = (message: any, namespace?: string) => {
+    if (typeof message === 'string') {
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [WARN] ${message}`);
     } else {
-        console.warn(`[${getTimeStamp()}] [WARN] [${namespace}] ${message}`);
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [WARN]`, message);
     }
 };
 
-const error = (namespace: string, message: string, object?: any) => {
-    if (object) {
-        console.error(`[${getTimeStamp()}] [ERROR] [${namespace}] ${message}`, object);
+const error = (message: any, namespace?: string) => {
+    if (typeof message === 'string') {
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [ERROR] ${message}`);
     } else {
-        console.error(`[${getTimeStamp()}] [ERROR] [${namespace}] ${message}`);
+        console.log(`[${getDate()}] [${namespace || DEFAULT_NAMESPACE}] [ERROR]`, message);
     }
 };
 
-const debug = (namespace: string, message: string, object?: any) => {
-    if (object) {
-        console.debug(`[${getTimeStamp()}] [DEBUG] [${namespace}] ${message}`, object);
-    } else {
-        console.debug(`[${getTimeStamp()}] [DEBUG] [${namespace}] ${message}`);
-    }
-};
-
-const getTimeStamp = (): string => {
+const getDate = () => {
     return new Date().toISOString();
 };
 
-export default {
-    info,
-    warn,
-    error,
-    debug
-};
+const logging = { info, warn, error };
+
+export default logging;
