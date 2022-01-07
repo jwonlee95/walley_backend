@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import logging from '../config/logging';
-import IBook from '../interfaces/book';
+import { IBook, IExpense } from '../interfaces/book';
 
 const BookSchema: Schema = new Schema(
     {
@@ -14,7 +14,7 @@ const BookSchema: Schema = new Schema(
 );
 
 BookSchema.post<IBook>('save', function () {
-    logging.info('Mongo', 'Checkout the book we just saved: ', this);
+    logging.info(this);
 });
 
 export default mongoose.model<IBook>('Book', BookSchema);
