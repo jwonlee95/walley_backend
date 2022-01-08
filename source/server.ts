@@ -8,6 +8,7 @@ import expenseRoutes from './routes/expense';
 import mongoose from 'mongoose';
 import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
+import incomeRoutes from './routes/income';
 
 const router = express();
 
@@ -62,6 +63,7 @@ router.use((req, res, next) => {
 router.use('/users', userRoutes);
 router.use('/api/books', bookRoutes);
 router.use('/api/expense', expenseRoutes);
+router.use('/api/income', incomeRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {

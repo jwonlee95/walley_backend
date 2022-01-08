@@ -8,22 +8,23 @@ interface IBook extends Document {
 
 interface IExpense extends Document {
     category: string;
-    description: string;
+    user: IUser;
+    description?: string;
     amount: number;
     balance: number;
 }
 
-interface IIncome {
+interface IIncome extends Document {
     category: string;
-    description: string;
-    amount: string;
-    balance: string;
+    user: IUser;
+    description?: string;
+    amount: number;
+    balance: number;
 }
 
-interface ISubscription {
+interface IUser extends Document {
+    uid: string;
     name: string;
-    recurDate: Date;
-    amount: string;
 }
 
-export { IBook, IExpense };
+export { IBook, IExpense, IIncome, IUser };

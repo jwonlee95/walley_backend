@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import Book from '../models/book';
+import Book from '../../models/book';
 
 const createBook = (req: Request, res: Response, next: NextFunction) => {
     let { author, title } = req.body;

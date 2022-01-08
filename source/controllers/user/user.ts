@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import logging from '../config/logging';
-import User from '../models/user';
+import logging from '../../config/logging';
+import User from '../../models/user';
 import mongoose from 'mongoose';
 
 const validate = (req: Request, res: Response, next: NextFunction) => {
