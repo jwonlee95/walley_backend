@@ -25,6 +25,9 @@ interface IIncome extends Document {
 interface IUser extends Document {
     uid: string;
     name: string;
+    expense: IExpense;
+    income: IIncome;
+    balace: number;
 }
 
 export { IBook, IExpense, IIncome, IUser };

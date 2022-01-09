@@ -29,13 +29,16 @@ const validate = (req: Request, res: Response, next: NextFunction) => {
 const create = (req: Request, res: Response, next: NextFunction) => {
     logging.info('Attempting to register user ...');
 
-    let { uid, name } = req.body;
+    let { uid, name, expense, income, balance } = req.body;
     let fire_token = res.locals.fire_token;
 
     const user = new User({
         _id: new mongoose.Types.ObjectId(),
         uid,
-        name
+        name,
+        expense,
+        income,
+        balance
     });
 
     return user
