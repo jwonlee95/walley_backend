@@ -2,25 +2,29 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import express from 'express';
 import logging from './config/logging';
-import config from './config/config';
 import bookRoutes from './routes/book';
 import expenseRoutes from './routes/expense';
 import mongoose from 'mongoose';
 import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
+import incomeRoutes from './routes/income';
+import dotenv from 'dotenv';
 
 const router = express();
 
+dotenv.config();
 /** Connect to Firebase */
-let serviceAccount = require('./config/serviceAccountKey.json');
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string);
 
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(serviceAccount)
 });
 
+const mongoUrl = process.env.MONGO_URL as string;
+
 /** Connect to Mongo */
 mongoose
-    .connect('mongodb+srv://superuser:qlalfqjsgh@walley.zxrjz.mongodb.net/Data')
+    .connect(mongoUrl)
     .then((result) => {
         logging.info('Mongo Connected');
     })
@@ -62,6 +66,7 @@ router.use((req, res, next) => {
 router.use('/users', userRoutes);
 router.use('/api/books', bookRoutes);
 router.use('/api/expense', expenseRoutes);
+router.use('/api/income', incomeRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {
@@ -73,5 +78,7 @@ router.use((req, res, next) => {
 });
 
 const httpServer = http.createServer(router);
+const port = process.env.SERVER_PORT;
+const host = process.env.SERVER_HOSTNAME;
 
-httpServer.listen(config.server.port, () => logging.info(`Server is running ${config.server.hostname}:${config.server.port}`));
+httpServer.listen(port, () => logging.info(`Server is running ${host}:${port}`));

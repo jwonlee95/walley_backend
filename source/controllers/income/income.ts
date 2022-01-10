@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import logging from '../../config/logging';
 import mongoose from 'mongoose';
-import Expense from '../../models/expense';
+import Income from '../../models/income';
 
 const create = (req: Request, res: Response, next: NextFunction) => {
     let { category, user, description, amount, balance } = req.body;
 
-    const expense = new Expense({
+    const income = new Income({
         _id: new mongoose.Types.ObjectId(),
         category,
         user,
@@ -15,11 +15,11 @@ const create = (req: Request, res: Response, next: NextFunction) => {
         balance
     });
 
-    return expense
+    return income
         .save()
         .then((result) => {
             return res.status(201).json({
-                expense: result
+                income: result
             });
         })
         .catch((error) => {
@@ -31,18 +31,18 @@ const create = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const read = (req: Request, res: Response, next: NextFunction) => {
-    const _id = req.params.expenseID;
-    logging.info(`Incoming read for expense with id ${_id}`);
+    const _id = req.params.incomeID;
+    logging.info(`Incoming read for income with id ${_id}`);
 
-    Expense.findById(_id)
+    Income.findById(_id)
         .populate('user')
         .exec()
-        .then((expense) => {
-            if (expense) {
-                return res.status(200).json({ expense });
+        .then((income) => {
+            if (income) {
+                return res.status(200).json({ income });
             } else {
                 return res.status(404).json({
-                    error: 'expense not found.'
+                    error: 'income not found.'
                 });
             }
         })
@@ -56,15 +56,15 @@ const read = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const readAll = (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Returning all expenses ');
+    logging.info('Returning all incomes ');
 
-    Expense.find()
+    Income.find()
         .populate('user')
         .exec()
-        .then((expense) => {
+        .then((income) => {
             return res.status(200).json({
-                count: expense.length,
-                expenses: expense
+                count: income.length,
+                incomes: income
             });
         })
         .catch((error) => {
@@ -79,13 +79,13 @@ const readAll = (req: Request, res: Response, next: NextFunction) => {
 const readExact = (req: Request, res: Response, next: NextFunction) => {
     logging.info('Query route called');
 
-    Expense.find(req.body)
+    Income.find(req.body)
         .populate('user')
         .exec()
-        .then((expense) => {
+        .then((income) => {
             return res.status(200).json({
-                count: expense.length,
-                expenses: expense
+                count: income.length,
+                incomes: income
             });
         })
         .catch((error) => {
@@ -100,20 +100,20 @@ const readExact = (req: Request, res: Response, next: NextFunction) => {
 const update = (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
-    const _id = req.params.expenseID;
+    const _id = req.params.incomeID;
 
-    Expense.findById(_id)
+    Income.findById(_id)
         .exec()
-        .then((expense) => {
-            if (expense) {
-                expense.set(req.body);
-                expense
+        .then((income) => {
+            if (income) {
+                income.set(req.body);
+                income
                     .save()
-                    .then((savedExpense) => {
-                        logging.info(`Expense with id ${_id} updated`);
+                    .then((savedIncome) => {
+                        logging.info(`Income with id ${_id} updated`);
 
                         return res.status(201).json({
-                            expense: savedExpense
+                            income: savedIncome
                         });
                     })
                     .catch((error) => {
@@ -138,16 +138,16 @@ const update = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const deleteExpense = (req: Request, res: Response, next: NextFunction) => {
+const deleteIncome = (req: Request, res: Response, next: NextFunction) => {
     logging.warn('Delete route called');
 
-    const _id = req.params.expenseID;
+    const _id = req.params.incomeID;
 
-    Expense.findByIdAndDelete(_id)
+    Income.findByIdAndDelete(_id)
         .exec()
         .then(() => {
             return res.status(201).json({
-                message: 'Expense deleted'
+                message: 'Income deleted'
             });
         })
         .catch((error) => {
@@ -159,4 +159,4 @@ const deleteExpense = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, read, readAll, readExact, update, deleteExpense };
+export default { create, read, readAll, readExact, update, deleteIncome };

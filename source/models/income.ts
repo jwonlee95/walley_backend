@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
-import { IExpense } from '../interfaces';
+import { IIncome } from '../interfaces';
 
-const ExpenseSchema: Schema = new Schema(
+const IncomeSchema: Schema = new Schema(
     {
         category: { type: String, required: true },
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -14,4 +14,4 @@ const ExpenseSchema: Schema = new Schema(
     }
 );
 
-export default mongoose.model<IExpense>('Expense', ExpenseSchema);
+export default mongoose.model<IIncome>('Income', IncomeSchema);

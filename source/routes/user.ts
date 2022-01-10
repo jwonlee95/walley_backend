@@ -1,5 +1,5 @@
 import express from 'express';
-import controller from '../controllers/user';
+import controller from '../controllers/user/user';
 import extractFirebaseInfo from '../middleware/extractFirebaseInfo';
 
 const router = express.Router();
