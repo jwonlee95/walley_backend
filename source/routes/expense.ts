@@ -9,5 +9,6 @@ router.post('/create', controller.create);
 router.post('/query', controller.readExact);
 router.patch('/update/:expenseID', controller.update);
 router.delete('/:expenseID', controller.deleteExpense);
+router.patch('/updateExpense/:userID', controller.expenseInUser);
 
 export = router;

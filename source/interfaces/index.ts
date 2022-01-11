@@ -1,11 +1,5 @@
 import { Document } from 'mongoose';
 
-interface IBook extends Document {
-    title: string;
-    author: string;
-    extraInformation: string;
-}
-
 interface IExpense extends Document {
     category: string;
     user: IUser;
@@ -30,4 +24,9 @@ interface IUser extends Document {
     balace: number;
 }
 
-export { IBook, IExpense, IIncome, IUser };
+interface ISubscription extends Document {
+    amount: number;
+    recurDate: Date;
+    description: string;
+}
+export { IExpense, IIncome, IUser, ISubscription };
