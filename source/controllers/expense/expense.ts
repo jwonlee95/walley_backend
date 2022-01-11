@@ -163,22 +163,20 @@ const expenseInUser = async (req: Request, res: Response, next: NextFunction) =>
     logging.info('Update route called');
 
     const _id = req.params.userID;
-    const body = req.body;
+    const body = req.body.expense;
     const data = new Expense({
         category: req.body.category,
         description: req.body.description,
-        amout: req.body.amount,
-        balance: req.body.balance
+        amount: req.body.amount,
+        createdAt: req.body.createdAt,
+        updatedAt: req.body.updatedAt
     });
 
-    console.log('req.body is ', body);
+    console.log('data is', data);
     User.findById(_id)
         .exec()
         .then((user) => {
             if (user) {
-                //user.expense.set(data);
-                console.log(user);
-
                 User.updateOne({ _id: _id }, { $push: { expense: data } }).exec();
                 user.save()
                     .then((savedUser) => {

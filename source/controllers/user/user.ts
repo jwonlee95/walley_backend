@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import logging from '../../config/logging';
 import User from '../../models/user';
 import mongoose from 'mongoose';
-import firebase from 'firebase-admin';
-import Expense from '../../models/expense';
 
 const validate = (req: Request, res: Response, next: NextFunction) => {
     logging.info('Token validated, ensuring user.');
@@ -129,68 +127,10 @@ const readAll = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const update = async (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Update route called');
-
-    const _id = req.params.userID;
-    const body = req.body;
-    const data = new Expense({
-        category: req.body.category,
-        description: req.body.description,
-        amout: req.body.amount,
-        balance: req.body.balance
-    });
-
-    console.log('req.body is ', body);
-    // User.updateOne(
-    //     { _id: id },
-    //     {
-    //         $push: { expense: data }
-    //     }
-    // ).exec();
-    User.findById(_id)
-        .exec()
-        .then((user) => {
-            if (user) {
-                //user.expense.set(data);
-                console.log(user);
-
-                User.updateOne({ _id: _id }, { $push: { expense: data } }).exec();
-                user.save()
-                    .then((savedUser) => {
-                        logging.info(`User with id ${_id} updated`);
-
-                        return res.status(201).json({
-                            user: savedUser
-                        });
-                    })
-                    .catch((error) => {
-                        logging.error(error.message);
-
-                        return res.status(500).json({
-                            message: error.message
-                        });
-                    });
-            } else {
-                return res.status(401).json({
-                    message: 'NOT FOUND'
-                });
-            }
-        })
-        .catch((error) => {
-            logging.error(error.message);
-
-            return res.status(500).json({
-                message: error.message
-            });
-        });
-};
-
 export default {
     validate,
     create,
     login,
     read,
-    readAll,
-    update
+    readAll
 };

@@ -2,12 +2,12 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import express from 'express';
 import logging from './config/logging';
-import bookRoutes from './routes/book';
 import expenseRoutes from './routes/expense';
 import mongoose from 'mongoose';
 import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
 import incomeRoutes from './routes/income';
+import subscriptionRoutes from './routes/subscription';
 import dotenv from 'dotenv';
 
 const router = express();
@@ -64,9 +64,9 @@ router.use((req, res, next) => {
 
 /** Routes go here */
 router.use('/users', userRoutes);
-router.use('/api/books', bookRoutes);
 router.use('/api/expense', expenseRoutes);
 router.use('/api/income', incomeRoutes);
+router.use('/api/subscription', subscriptionRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {
