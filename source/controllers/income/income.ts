@@ -4,12 +4,11 @@ import mongoose from 'mongoose';
 import Income from '../../models/income';
 
 const create = (req: Request, res: Response, next: NextFunction) => {
-    let { category, user, description, amount, balance } = req.body;
+    let { category, description, amount, balance } = req.body;
 
     const income = new Income({
         _id: new mongoose.Types.ObjectId(),
         category,
-        user,
         description,
         amount,
         balance

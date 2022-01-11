@@ -2,14 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 import logging from '../../config/logging';
 import mongoose from 'mongoose';
 import Expense from '../../models/expense';
+import User from '../../models/user';
 
 const create = (req: Request, res: Response, next: NextFunction) => {
-    let { category, user, description, amount, balance } = req.body;
+    let { category, description, amount, balance } = req.body;
 
     const expense = new Expense({
         _id: new mongoose.Types.ObjectId(),
         category,
-        user,
         description,
         amount,
         balance
@@ -159,4 +159,55 @@ const deleteExpense = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, read, readAll, readExact, update, deleteExpense };
+const expenseInUser = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Update route called');
+
+    const _id = req.params.userID;
+    const body = req.body;
+    const data = new Expense({
+        category: req.body.category,
+        description: req.body.description,
+        amout: req.body.amount,
+        balance: req.body.balance
+    });
+
+    console.log('req.body is ', body);
+    User.findById(_id)
+        .exec()
+        .then((user) => {
+            if (user) {
+                //user.expense.set(data);
+                console.log(user);
+
+                User.updateOne({ _id: _id }, { $push: { expense: data } }).exec();
+                user.save()
+                    .then((savedUser) => {
+                        logging.info(`User with id ${_id} updated`);
+
+                        return res.status(201).json({
+                            user: savedUser
+                        });
+                    })
+                    .catch((error) => {
+                        logging.error(error.message);
+
+                        return res.status(500).json({
+                            message: error.message
+                        });
+                    });
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+export default { create, read, readAll, readExact, update, deleteExpense, expenseInUser };
