@@ -1,5 +1,4 @@
 import http from 'http';
-import bodyParser from 'body-parser';
 import express from 'express';
 import logging from './config/logging';
 import expenseRoutes from './routes/expense';
@@ -9,12 +8,20 @@ import userRoutes from './routes/user';
 import incomeRoutes from './routes/income';
 import subscriptionRoutes from './routes/subscription';
 import dotenv from 'dotenv';
-
-const router = express();
-
+import cors from 'cors';
 dotenv.config();
+
+const app = express();
+const allowedOrigins = process.env.ORIGIN!;
+const options: cors.CorsOptions = {
+    origin: allowedOrigins
+};
+app.use(cors(options));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 /** Connect to Firebase */
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string);
+const serviceAccount = require('./config/serviceAccountKey.json');
 
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(serviceAccount)
@@ -33,7 +40,7 @@ mongoose
     });
 
 /** Log the request */
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     /** Log the req */
     logging.info(`METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`);
 
@@ -46,11 +53,9 @@ router.use((req, res, next) => {
 });
 
 /** Parse the body of the request */
-router.use(bodyParser.urlencoded({ extended: true }));
-router.use(bodyParser.json());
 
 /** Rules of our API */
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
@@ -63,13 +68,13 @@ router.use((req, res, next) => {
 });
 
 /** Routes go here */
-router.use('/users', userRoutes);
-router.use('/api/expense', expenseRoutes);
-router.use('/api/income', incomeRoutes);
-router.use('/api/subscription', subscriptionRoutes);
+app.use('/users', userRoutes);
+app.use('/api/expense', expenseRoutes);
+app.use('/api/income', incomeRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 /** Error handling */
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     const error = new Error('Not found');
 
     res.status(404).json({
@@ -77,7 +82,7 @@ router.use((req, res, next) => {
     });
 });
 
-const httpServer = http.createServer(router);
+const httpServer = http.createServer(app);
 const port = process.env.SERVER_PORT;
 const host = process.env.SERVER_HOSTNAME;
 
