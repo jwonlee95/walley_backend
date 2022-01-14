@@ -29,6 +29,13 @@ const UserSchema: Schema = new Schema({
             recurDate: { type: Date, required: true, default: now }
         }
     ],
+    types: [
+        {
+            name: { type: String, required: true },
+            budget: { type: Number, required: true, default: 0 },
+            spent: { type: Number, required: true, default: 0 }
+        }
+    ],
     balance: { type: Number, default: 0 }
 });
 

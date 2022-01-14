@@ -8,6 +8,7 @@ import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
 import incomeRoutes from './routes/income';
 import subscriptionRoutes from './routes/subscription';
+import typesRoutes from './routes/types';
 import dotenv from 'dotenv';
 
 const router = express();
@@ -67,6 +68,7 @@ router.use('/users', userRoutes);
 router.use('/api/expense', expenseRoutes);
 router.use('/api/income', incomeRoutes);
 router.use('/api/subscription', subscriptionRoutes);
+router.use('/api/types', typesRoutes);
 
 /** Error handling */
 router.use((req, res, next) => {
