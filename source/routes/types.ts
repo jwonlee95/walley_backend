@@ -7,5 +7,6 @@ router.get('/read/:types', controller.read);
 router.post('/create', controller.create);
 router.patch('/updateExpenseTypes/:userID', controller.expenseTypesInUser);
 router.patch('/updateIncomeTypes/:userID', controller.incomeTypesInUser);
+router.patch('/updateSpent/:userID', controller.addSpent);
 
 export = router;

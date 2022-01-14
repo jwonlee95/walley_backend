@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import e, { NextFunction, Request, Response } from 'express';
 import logging from '../../config/logging';
 import mongoose from 'mongoose';
 import Types from '../../models/types';
@@ -82,6 +82,7 @@ const expenseTypesInUser = async (req: Request, res: Response, next: NextFunctio
         name: req.body.name,
         budget: req.body.budget,
         spent: req.body.amount,
+        remain: req.body.budget,
         createdAt: req.body.createdAt,
         updatedAt: req.body.updatedAt
     });
@@ -167,4 +168,46 @@ const incomeTypesInUser = async (req: Request, res: Response, next: NextFunction
         });
 };
 
-export default { create, read, expenseTypesInUser, incomeTypesInUser };
+const addSpent = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Update Spent route called');
+
+    const _id = req.params.userID;
+    const data = new Types({
+        name: req.body.category,
+        spent: req.body.amount
+    });
+
+    console.log('data is', data);
+    User.findById(_id, 'expenseTypes')
+        .exec()
+        .then((user) => {
+            if (user) {
+                user.expenseTypes.map(function (e) {
+                    if (e.name === data.name) {
+                        console.log('expenseType now is: ', e);
+                        User.updateOne(
+                            { _id: _id },
+                            { $set: { 'expenseTypes.$[el].spent': e.spent + data.spent, 'expenseTypes.$[el].remain': e.remain - data.spent } },
+                            {
+                                arrayFilters: [{ 'el.name': data.name }],
+                                new: true
+                            }
+                        ).exec();
+                    }
+                });
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+export default { create, read, expenseTypesInUser, incomeTypesInUser, addSpent };
