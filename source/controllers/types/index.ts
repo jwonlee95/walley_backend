@@ -53,7 +53,27 @@ const read = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const typesInUser = async (req: Request, res: Response, next: NextFunction) => {
+const readAll = (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Readall route called');
+
+    User.find()
+        .exec()
+        .then((users) => {
+            return res.status(200).json({
+                count: users.length,
+                users: users
+            });
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+const expenseTypesInUser = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
     const _id = req.params.userID;
@@ -71,7 +91,7 @@ const typesInUser = async (req: Request, res: Response, next: NextFunction) => {
         .exec()
         .then((user) => {
             if (user) {
-                User.updateOne({ _id: _id }, { $push: { types: data } }).exec();
+                User.updateOne({ _id: _id }, { $push: { expenseTypes: data } }).exec();
                 user.save()
                     .then((savedUser) => {
                         logging.info(`User with id ${_id} updated`);
@@ -102,4 +122,49 @@ const typesInUser = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, read, typesInUser };
+const incomeTypesInUser = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Update route called');
+
+    const _id = req.params.userID;
+    const body = req.body.types;
+    const data = new Types({
+        name: req.body.name
+    });
+
+    console.log('data is', data);
+    User.findById(_id)
+        .exec()
+        .then((user) => {
+            if (user) {
+                User.updateOne({ _id: _id }, { $push: { incomeTypes: data } }).exec();
+                user.save()
+                    .then((savedUser) => {
+                        logging.info(`User with id ${_id} updated`);
+
+                        return res.status(201).json({
+                            user: savedUser
+                        });
+                    })
+                    .catch((error) => {
+                        logging.error(error.message);
+
+                        return res.status(500).json({
+                            message: error.message
+                        });
+                    });
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+export default { create, read, expenseTypesInUser, incomeTypesInUser };
