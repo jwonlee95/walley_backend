@@ -8,6 +8,7 @@ interface IExpense extends Document {
 
 interface IIncome extends Document {
     category: string;
+
     description?: string;
     amount: number;
 }
@@ -15,6 +16,7 @@ interface IIncome extends Document {
 interface IUser extends Document {
     uid: string;
     name: string;
+
     expense: IExpense[];
     income: IIncome[];
     balace: number;
@@ -29,6 +31,7 @@ interface ISubscription extends Document {
     description: string;
 }
 
+
 interface ITypes extends Document {
     name: string;
     budget: number;
@@ -36,3 +39,4 @@ interface ITypes extends Document {
     remain: number;
 }
 export { IExpense, IIncome, IUser, ISubscription, ITypes };
+

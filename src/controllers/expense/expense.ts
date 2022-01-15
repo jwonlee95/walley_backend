@@ -171,6 +171,7 @@ const expenseInUser = async (req: Request, res: Response, next: NextFunction) =>
         createdAt: req.body.createdAt,
         updatedAt: req.body.updatedAt
     });
+
     User.findById(_id)
         .exec()
         .then((user) => {
