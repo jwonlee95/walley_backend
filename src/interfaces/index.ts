@@ -2,26 +2,27 @@ import { Document } from 'mongoose';
 
 interface IExpense extends Document {
     category: string;
-    user: IUser;
     description?: string;
     amount: number;
-    balance: number;
 }
 
 interface IIncome extends Document {
     category: string;
-    user: IUser;
+
     description?: string;
     amount: number;
-    balance: number;
 }
 
 interface IUser extends Document {
     uid: string;
     name: string;
-    expense: IExpense;
-    income: IIncome;
+
+    expense: IExpense[];
+    income: IIncome[];
     balace: number;
+    subscription: ISubscription[];
+    expenseTypes: ITypes[];
+    incomeTypes: ITypes[];
 }
 
 interface ISubscription extends Document {
@@ -29,4 +30,13 @@ interface ISubscription extends Document {
     recurDate: Date;
     description: string;
 }
-export { IExpense, IIncome, IUser, ISubscription };
+
+
+interface ITypes extends Document {
+    name: string;
+    budget: number;
+    spent: number;
+    remain: number;
+}
+export { IExpense, IIncome, IUser, ISubscription, ITypes };
+
