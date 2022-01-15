@@ -9,16 +9,35 @@ import incomeRoutes from './routes/income';
 import subscriptionRoutes from './routes/subscription';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import session from 'express-session';
 dotenv.config();
 
 const app = express();
 const allowedOrigins = process.env.ORIGIN!;
 const options: cors.CorsOptions = {
-    origin: allowedOrigins
+    origin: allowedOrigins,
+    methods: ['PUT', 'POST', 'DELETE', 'GET'],
+    credentials: true
 };
 app.use(cors(options));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET!,
+        name: process.env.COOKIE_NAME!,
+        saveUninitialized: true,
+        resave: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 7, //7 days
+            httpOnly: false,
+
+            secure: process.env.NODE_ENV! === 'production',
+            sameSite: process.env.NODE_ENV! === 'production' ? 'none' : undefined
+        }
+    })
+);
 
 /** Connect to Firebase */
 const serviceAccount = require('./config/serviceAccountKey.json');
@@ -55,17 +74,17 @@ app.use((req, res, next) => {
 /** Parse the body of the request */
 
 /** Rules of our API */
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
-    if (req.method == 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-        return res.status(200).json({});
-    }
+//     if (req.method == 'OPTIONS') {
+//         res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+//         return res.status(200).json({});
+//     }
 
-    next();
-});
+//     next();
+// });
 
 /** Routes go here */
 app.use('/users', userRoutes);
