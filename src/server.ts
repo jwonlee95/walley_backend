@@ -7,6 +7,7 @@ import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
 import incomeRoutes from './routes/income';
 import subscriptionRoutes from './routes/subscription';
+import typesRoutes from './routes/types';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
@@ -59,7 +60,9 @@ mongoose
     });
 
 /** Log the request */
+
 app.use((req, res, next) => {
+
     /** Log the req */
     logging.info(`METHOD: [${req.method}] - URL: [${req.url}] - IP: [${req.socket.remoteAddress}]`);
 
@@ -72,7 +75,6 @@ app.use((req, res, next) => {
 });
 
 /** Parse the body of the request */
-
 /** Rules of our API */
 // app.use((req, res, next) => {
 //     res.header('Access-Control-Allow-Origin', '*');
@@ -91,6 +93,7 @@ app.use('/users', userRoutes);
 app.use('/api/expense', expenseRoutes);
 app.use('/api/income', incomeRoutes);
 app.use('/api/subscription', subscriptionRoutes);
+app.use('/api/types', typesRoutes);
 
 /** Error handling */
 app.use((req, res, next) => {
