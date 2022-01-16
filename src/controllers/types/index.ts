@@ -168,31 +168,78 @@ const incomeTypesInUser = async (req: Request, res: Response, next: NextFunction
         });
 };
 
+const editIncomeTypesInUser = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Update Spent route called');
+
+    const _id = req.params.userID;
+    const data = new Types({
+        oldName: req.body.oldName,
+        name: req.body.name,
+        budget: req.body.budget
+    });
+
+    console.log('data is', data);
+    User.findById(_id, 'income')
+        .exec()
+        .then((user) => {
+            if (user) {
+                user.incomeTypes.map(function (e) {
+                    User.updateOne(
+                        { _id: _id },
+                        {
+                            $set: {
+                                'incomeTypes.$[el].name': data.name,
+                                'incomeTypes.$[el].budget': data.budget,
+                                'incomeTypes.$[el].remain': { $subtract: [data.budget, 'incomeTypes.$[el].spent'] }
+                            }
+                        },
+                        {
+                            arrayFilters: [{ 'el.name': data.oldName }],
+                            new: true
+                        }
+                    ).exec();
+                });
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
 const addSpent = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update Spent route called');
 
     const _id = req.params.userID;
+    var newSpent = 0;
     const data = new Types({
         name: req.body.category,
         spent: req.body.amount
     });
 
     console.log('data is', data);
-    User.findById(_id, 'expenseTypes')
+    User.findById(_id, 'expense')
         .exec()
         .then((user) => {
             if (user) {
-                user.expenseTypes.map(function (e) {
-                    if (e.name === data.name) {
-                        console.log('expenseType now is: ', e);
+                user.expense.map(function (e) {
+                    if (e.category === data.name) {
                         User.updateOne(
                             { _id: _id },
-                            { $set: { 'expenseTypes.$[el].spent': e.spent + data.spent, 'expenseTypes.$[el].remain': e.remain - data.spent } },
+                            { $set: { 'expenseTypes.$[el].spent': newSpent + data.spent } },
                             {
                                 arrayFilters: [{ 'el.name': data.name }],
                                 new: true
                             }
                         ).exec();
+                        newSpent += e.amount;
                     }
                 });
             } else {
