@@ -160,7 +160,7 @@ const deleteExpense = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const expenseInUser = async (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Update route called');
+    logging.info('Update Expense route called');
 
     const _id = req.params.userID;
     const body = req.body.expense;
@@ -207,4 +207,54 @@ const expenseInUser = async (req: Request, res: Response, next: NextFunction) =>
         });
 };
 
-export default { create, read, readAll, readExact, update, deleteExpense, expenseInUser };
+const editExpenseInUser = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Update EditExpense route called');
+
+    const _id = req.params.userID;
+    const expenseID = req.params.expenseID;
+    const data = new Expense({
+        category: req.body.category,
+        description: req.body.description,
+        amount: req.body.amount,
+        createdAt: req.body.createdAt,
+        updatedAt: req.body.updatedAt
+    });
+
+    console.log('data is', data);
+    User.findById(_id, 'expense')
+        .exec()
+        .then((user) => {
+            if (user) {
+                user.expense.map(function (e) {
+                    User.updateOne(
+                        { _id: _id },
+                        {
+                            $set: {
+                                'expense.$[el].category': data.category,
+                                'expense.$[el].description': data.description,
+                                'expense.$[el].amount': data.amount,
+                                'expense.$[el].updatedAt': data.updatedAt
+                            }
+                        },
+                        {
+                            arrayFilters: [{ 'el._id': expenseID }],
+                            new: true
+                        }
+                    ).exec();
+                });
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+export default { create, read, readAll, readExact, update, deleteExpense, expenseInUser, editExpenseInUser };
