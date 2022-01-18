@@ -90,7 +90,9 @@ const read = (req: Request, res: Response, next: NextFunction) => {
         .then((user) => {
             if (user) {
                 return res.status(200).json({
-                    user: user
+                    payload: {
+                        data: user
+                    }
                 });
             } else {
                 return res.status(404).json({

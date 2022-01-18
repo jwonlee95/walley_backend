@@ -19,7 +19,9 @@ const create = (req: Request, res: Response, next: NextFunction) => {
         .save()
         .then((result) => {
             return res.status(201).json({
-                expense: result
+                payload: {
+                    data: result
+                }
             });
         })
         .catch((error) => {
