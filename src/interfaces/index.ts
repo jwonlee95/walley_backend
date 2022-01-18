@@ -4,13 +4,14 @@ interface IExpense extends Document {
     category: string;
     description?: string;
     amount: number;
+    updatedAt: Date;
 }
 
 interface IIncome extends Document {
     category: string;
-
     description?: string;
     amount: number;
+    updatedAt: Date;
 }
 
 interface IUser extends Document {
@@ -31,12 +32,11 @@ interface ISubscription extends Document {
     description: string;
 }
 
-
 interface ITypes extends Document {
+    oldName: string;
     name: string;
     budget: number;
     spent: number;
     remain: number;
 }
 export { IExpense, IIncome, IUser, ISubscription, ITypes };
-
