@@ -3,8 +3,8 @@ import { ISubscription } from '../interfaces';
 
 const SubscriptionSchema: Schema = new Schema(
     {
+        name: { type: String, required: true },
         amount: { type: Number, required: true },
-        description: { type: String },
         recurDate: { type: Date, required: true, default: now }
     },
     {

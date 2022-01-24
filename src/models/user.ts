@@ -15,7 +15,6 @@ const UserSchema: Schema = new Schema({
     ],
     income: [
         {
-            category: { type: String, required: true },
             description: { type: String },
             amount: { type: Number, required: true, default: 0 },
             createdAt: { type: Date },
@@ -24,23 +23,20 @@ const UserSchema: Schema = new Schema({
     ],
     subscription: [
         {
+            name: { type: String, required: true },
             amount: { type: Number, required: true },
-            description: { type: String },
             recurDate: { type: Date, required: true, default: now }
         }
     ],
 
-    expenseTypes: [
+    category: [
         {
+            icon: { type: String, required: true },
+            color: { type: String, required: true },
             name: { type: String, required: true },
             budget: { type: Number, required: true, default: 0 },
             spent: { type: Number, required: true, default: 0 },
             remain: { type: Number, default: 0 }
-        }
-    ],
-    incomeTypes: [
-        {
-            name: { type: String, required: true }
         }
     ],
 
