@@ -29,7 +29,7 @@ interface IUser extends Document {
 interface ISubscription extends Document {
     amount: number;
     recurDate: Date;
-    description: string;
+    name: string;
 }
 
 interface ICategory extends Document {
