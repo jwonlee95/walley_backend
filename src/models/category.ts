@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
-import { ITypes } from '../interfaces';
+import { ICategory } from '../interfaces';
 
-const TypesSchema: Schema = new Schema(
+const CategorySchema: Schema = new Schema(
     {
         icon: { type: String, required: true },
         color: { type: String, required: true },
@@ -14,4 +14,4 @@ const TypesSchema: Schema = new Schema(
     }
 );
 
-export default mongoose.model<ITypes>('Types', TypesSchema);
+export default mongoose.model<ICategory>('Category', CategorySchema);
