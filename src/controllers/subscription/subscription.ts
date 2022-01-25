@@ -9,7 +9,7 @@ const subInUser = async (req: Request, res: Response, next: NextFunction) => {
 
     const _id = req.params.userID;
     const data = new Subscription({
-        description: req.body.description,
+        name: req.body.name,
         amount: req.body.amount,
         recurDate: req.body.recurDate
     });

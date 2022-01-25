@@ -169,11 +169,9 @@ const expenseInUser = async (req: Request, res: Response, next: NextFunction) =>
     const data = new Expense({
         category: req.body.category,
         description: req.body.description,
-        amount: req.body.amount,
-        createdAt: req.body.createdAt,
-        updatedAt: req.body.updatedAt
+        amount: req.body.amount
     });
-
+    console.log('data is ', data);
     User.findById(_id)
         .exec()
         .then((user) => {
