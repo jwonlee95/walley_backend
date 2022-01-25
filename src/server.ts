@@ -7,7 +7,7 @@ import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
 import incomeRoutes from './routes/income';
 import subscriptionRoutes from './routes/subscription';
-import typesRoutes from './routes/types';
+import categoryRoutes from './routes/category';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
@@ -78,7 +78,7 @@ app.use('/users', userRoutes);
 app.use('/api/expense', expenseRoutes);
 app.use('/api/income', incomeRoutes);
 app.use('/api/subscription', subscriptionRoutes);
-app.use('/api/types', typesRoutes);
+app.use('/api/category', categoryRoutes);
 
 /** Error handling */
 app.use((req, res, next) => {

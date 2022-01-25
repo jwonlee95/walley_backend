@@ -1,24 +1,24 @@
 import e, { NextFunction, Request, Response } from 'express';
 import logging from '../../config/logging';
 import mongoose from 'mongoose';
-import Types from '../../models/types';
+import Category from '../../models/category';
 import User from '../../models/user';
 
 const create = (req: Request, res: Response, next: NextFunction) => {
     let { name, budget, spent } = req.body;
 
-    const types = new Types({
+    const category = new Category({
         _id: new mongoose.Types.ObjectId(),
         name,
         budget,
         spent
     });
 
-    return types
+    return category
         .save()
         .then((result) => {
             return res.status(201).json({
-                types: result
+                category: result
             });
         })
         .catch((error) => {
@@ -30,17 +30,17 @@ const create = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const read = (req: Request, res: Response, next: NextFunction) => {
-    const _id = req.params.typesID;
-    logging.info(`Incoming read for types with id ${_id}`);
+    const _id = req.params.categoryID;
+    logging.info(`Incoming read for category with id ${_id}`);
 
-    Types.findById(_id)
+    Category.findById(_id)
         .populate('user')
         .exec()
-        .then((types) => {
-            if (types) {
-                return res.status(200).json({ types });
+        .then((category) => {
+            if (category) {
+                return res.status(200).json({ category });
             } else {
-                logging.info('Types does not exist. Creating...');
+                logging.info('Category does not exist. Creating...');
                 return create(req, res, next);
             }
         })
@@ -53,38 +53,17 @@ const read = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const readAll = (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Readall route called');
-
-    User.find()
-        .exec()
-        .then((users) => {
-            return res.status(200).json({
-                count: users.length,
-                users: users
-            });
-        })
-        .catch((error) => {
-            logging.error(error.message);
-
-            return res.status(500).json({
-                message: error.message
-            });
-        });
-};
-
-const expenseTypesInUser = async (req: Request, res: Response, next: NextFunction) => {
+const expenseCategoryInUser = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
     const _id = req.params.userID;
-    const body = req.body.types;
-    const data = new Types({
+    const body = req.body.category;
+    const data = new Category({
+        icon: req.body.icon,
+        color: req.body.color,
         name: req.body.name,
         budget: req.body.budget,
-        spent: req.body.amount,
-        remain: req.body.budget,
-        createdAt: req.body.createdAt,
-        updatedAt: req.body.updatedAt
+        remain: req.body.budget
     });
 
     console.log('data is', data);
@@ -92,7 +71,7 @@ const expenseTypesInUser = async (req: Request, res: Response, next: NextFunctio
         .exec()
         .then((user) => {
             if (user) {
-                User.updateOne({ _id: _id }, { $push: { expenseTypes: data } }).exec();
+                User.updateOne({ _id: _id }, { $push: { category: data } }).exec();
                 user.save()
                     .then((savedUser) => {
                         logging.info(`User with id ${_id} updated`);
@@ -123,12 +102,12 @@ const expenseTypesInUser = async (req: Request, res: Response, next: NextFunctio
         });
 };
 
-const incomeTypesInUser = async (req: Request, res: Response, next: NextFunction) => {
+const incomeCategoryInUser = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
     const _id = req.params.userID;
-    const body = req.body.types;
-    const data = new Types({
+    const body = req.body.category;
+    const data = new Category({
         name: req.body.name
     });
 
@@ -137,7 +116,7 @@ const incomeTypesInUser = async (req: Request, res: Response, next: NextFunction
         .exec()
         .then((user) => {
             if (user) {
-                User.updateOne({ _id: _id }, { $push: { incomeTypes: data } }).exec();
+                User.updateOne({ _id: _id }, { $push: { incomeCategory: data } }).exec();
                 user.save()
                     .then((savedUser) => {
                         logging.info(`User with id ${_id} updated`);
@@ -168,11 +147,11 @@ const incomeTypesInUser = async (req: Request, res: Response, next: NextFunction
         });
 };
 
-const editIncomeTypesInUser = async (req: Request, res: Response, next: NextFunction) => {
+const editIncomeCategoryInUser = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update Spent route called');
 
     const _id = req.params.userID;
-    const data = new Types({
+    const data = new Category({
         oldName: req.body.oldName,
         name: req.body.name,
         budget: req.body.budget
@@ -183,14 +162,14 @@ const editIncomeTypesInUser = async (req: Request, res: Response, next: NextFunc
         .exec()
         .then((user) => {
             if (user) {
-                user.incomeTypes.map(function (e) {
+                user.incomeCategory.map(function (e) {
                     User.updateOne(
                         { _id: _id },
                         {
                             $set: {
-                                'incomeTypes.$[el].name': data.name,
-                                'incomeTypes.$[el].budget': data.budget,
-                                'incomeTypes.$[el].remain': { $subtract: [data.budget, 'incomeTypes.$[el].spent'] }
+                                'incomeCategory.$[el].name': data.name,
+                                'incomeCategory.$[el].budget': data.budget,
+                                'incomeCategory.$[el].remain': { $subtract: [data.budget, 'incomeCategory.$[el].spent'] }
                             }
                         },
                         {
@@ -219,7 +198,7 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
 
     const _id = req.params.userID;
     var newSpent = 0;
-    const data = new Types({
+    const data = new Category({
         name: req.body.category,
         spent: req.body.amount
     });
@@ -233,7 +212,7 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
                     if (e.category === data.name) {
                         User.updateOne(
                             { _id: _id },
-                            { $set: { 'expenseTypes.$[el].spent': newSpent + data.spent } },
+                            { $set: { 'expenseCategory.$[el].spent': newSpent + data.spent } },
                             {
                                 arrayFilters: [{ 'el.name': data.name }],
                                 new: true
@@ -257,4 +236,4 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, read, expenseTypesInUser, incomeTypesInUser, addSpent };
+export default { create, read, expenseCategoryInUser, incomeCategoryInUser, addSpent };

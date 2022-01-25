@@ -22,8 +22,8 @@ interface IUser extends Document {
     income: IIncome[];
     balace: number;
     subscription: ISubscription[];
-    expenseTypes: ITypes[];
-    incomeTypes: ITypes[];
+    expenseCategory: ICategory[];
+    incomeCategory: ICategory[];
 }
 
 interface ISubscription extends Document {
@@ -32,11 +32,13 @@ interface ISubscription extends Document {
     description: string;
 }
 
-interface ITypes extends Document {
+interface ICategory extends Document {
     oldName: string;
+    icon: string;
+    color: string;
     name: string;
     budget: number;
     spent: number;
     remain: number;
 }
-export { IExpense, IIncome, IUser, ISubscription, ITypes };
+export { IExpense, IIncome, IUser, ISubscription, ICategory };
