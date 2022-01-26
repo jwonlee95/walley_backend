@@ -53,7 +53,7 @@ const read = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const expenseCategoryInUser = async (req: Request, res: Response, next: NextFunction) => {
+const createCategory = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
     const _id = req.params.userID;
@@ -77,52 +77,9 @@ const expenseCategoryInUser = async (req: Request, res: Response, next: NextFunc
                         logging.info(`User with id ${_id} updated`);
 
                         return res.status(201).json({
-                            user: savedUser
-                        });
-                    })
-                    .catch((error) => {
-                        logging.error(error.message);
-
-                        return res.status(500).json({
-                            message: error.message
-                        });
-                    });
-            } else {
-                return res.status(401).json({
-                    message: 'NOT FOUND'
-                });
-            }
-        })
-        .catch((error) => {
-            logging.error(error.message);
-
-            return res.status(500).json({
-                message: error.message
-            });
-        });
-};
-
-const incomeCategoryInUser = async (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Update route called');
-
-    const _id = req.params.userID;
-    const body = req.body.category;
-    const data = new Category({
-        name: req.body.name
-    });
-
-    console.log('data is', data);
-    User.findById(_id)
-        .exec()
-        .then((user) => {
-            if (user) {
-                User.updateOne({ _id: _id }, { $push: { incomeCategory: data } }).exec();
-                user.save()
-                    .then((savedUser) => {
-                        logging.info(`User with id ${_id} updated`);
-
-                        return res.status(201).json({
-                            user: savedUser
+                            payload: {
+                                data: data
+                            }
                         });
                     })
                     .catch((error) => {
@@ -236,4 +193,4 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, read, expenseCategoryInUser, incomeCategoryInUser, addSpent };
+export default { create, read, createCategory, addSpent };
