@@ -4,56 +4,7 @@ import mongoose from 'mongoose';
 import Category from '../../models/category';
 import User from '../../models/user';
 
-const create = (req: Request, res: Response, next: NextFunction) => {
-    let { name, budget, spent } = req.body;
-
-    const category = new Category({
-        _id: new mongoose.Types.ObjectId(),
-        name,
-        budget,
-        spent
-    });
-
-    return category
-        .save()
-        .then((result) => {
-            return res.status(201).json({
-                category: result
-            });
-        })
-        .catch((error) => {
-            return res.status(500).json({
-                message: error.message,
-                error
-            });
-        });
-};
-
-const read = (req: Request, res: Response, next: NextFunction) => {
-    const _id = req.params.categoryID;
-    logging.info(`Incoming read for category with id ${_id}`);
-
-    Category.findById(_id)
-        .populate('user')
-        .exec()
-        .then((category) => {
-            if (category) {
-                return res.status(200).json({ category });
-            } else {
-                logging.info('Category does not exist. Creating...');
-                return create(req, res, next);
-            }
-        })
-        .catch((error) => {
-            logging.error(error.message);
-
-            return res.status(500).json({
-                error: error.message
-            });
-        });
-};
-
-const createCategory = async (req: Request, res: Response, next: NextFunction) => {
+const create = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
     const _id = req.params.userID;
@@ -193,4 +144,4 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, read, createCategory, addSpent };
+export default { create, addSpent };
