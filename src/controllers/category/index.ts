@@ -105,11 +105,12 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update Spent route called');
 
     const _id = req.params.userID;
-    var newSpent = 0;
     const data = new Category({
-        name: req.body.category,
-        spent: req.body.amount
+        name: req.body.name,
+        spent: req.body.spent
     });
+    var newSpent = data.spent;
+    var exist = false;
 
     console.log('data is', data);
     User.findById(_id, 'expense')
@@ -118,17 +119,33 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
             if (user) {
                 user.expense.map(function (e) {
                     if (e.category === data.name) {
+                        exist = true;
+                    }
+                    if (exist === true) {
+                        console.log('EXIST TRUE ');
+
+                        newSpent = newSpent + e.amount;
                         User.updateOne(
                             { _id: _id },
-                            { $set: { 'expenseCategory.$[el].spent': newSpent + data.spent } },
+                            { $set: { 'category.$[el].spent': newSpent } },
                             {
                                 arrayFilters: [{ 'el.name': data.name }],
                                 new: true
                             }
                         ).exec();
-                        newSpent += e.amount;
                     }
                 });
+                if (exist === false) {
+                    console.log('EXIST FALSE ');
+                    User.updateOne(
+                        { _id: _id },
+                        { $set: { 'category.$[el].spent': data.spent } },
+                        {
+                            arrayFilters: [{ 'el.name': data.name }],
+                            new: true
+                        }
+                    ).exec();
+                }
             } else {
                 return res.status(401).json({
                     message: 'NOT FOUND'

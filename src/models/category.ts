@@ -7,7 +7,8 @@ const CategorySchema: Schema = new Schema(
         color: { type: String, required: true },
         name: { type: String, required: true },
         budget: { type: Number, required: true, default: 0 },
-        remain: { type: Number, default: 0 }
+        remain: { type: Number, default: 0 },
+        spent: { type: Number, default: 0 }
     },
     {
         timestamps: true
