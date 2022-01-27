@@ -104,4 +104,4 @@ dist
 .tern-port
 
 # firebase config keys
-src/config/serviceAccountKey.json
+serviceAccountKey.json

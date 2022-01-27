@@ -4,7 +4,7 @@ import logging from '../../config/logging';
 import Subscription from '../../models/subscription';
 import User from '../../models/user';
 
-const subInUser = async (req: Request, res: Response, next: NextFunction) => {
+const create = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
 
     const _id = req.params.userID;
@@ -25,7 +25,9 @@ const subInUser = async (req: Request, res: Response, next: NextFunction) => {
                         logging.info(`User with id ${_id} updated`);
 
                         return res.status(201).json({
-                            user: savedUser
+                            payload: {
+                                data: data
+                            }
                         });
                     })
                     .catch((error) => {
@@ -85,4 +87,4 @@ const updateRecurDate = async (req: Request, res: Response, next: NextFunction) 
             }
         });
 };
-export default { subInUser, updateRecurDate };
+export default { create, updateRecurDate };

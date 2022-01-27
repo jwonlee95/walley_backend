@@ -41,7 +41,7 @@ app.use(
 );
 
 /** Connect to Firebase */
-const serviceAccount = require('./config/serviceAccountKey.json');
+const serviceAccount = require('../serviceAccountKey.json');
 
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(serviceAccount)
