@@ -22,8 +22,7 @@ interface IUser extends Document {
     income: IIncome[];
     balace: number;
     subscription: ISubscription[];
-    expenseCategory: ICategory[];
-    incomeCategory: ICategory[];
+    category: ICategory[];
 }
 
 interface ISubscription extends Document {
@@ -34,6 +33,8 @@ interface ISubscription extends Document {
 
 interface ICategory extends Document {
     oldName: string;
+    oldAmount: number;
+    oldSpent: number;
     icon: string;
     color: string;
     name: string;

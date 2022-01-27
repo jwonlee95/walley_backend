@@ -8,7 +8,10 @@ const CategorySchema: Schema = new Schema(
         name: { type: String, required: true },
         budget: { type: Number, required: true, default: 0 },
         remain: { type: Number, default: 0 },
-        spent: { type: Number, default: 0 }
+        spent: { type: Number, default: 0 },
+        oldSpent: { type: Number, default: 0 },
+        oldAmount: { type: Number, default: 0 },
+        oldName: { type: String }
     },
     {
         timestamps: true

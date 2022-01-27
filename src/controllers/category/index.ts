@@ -3,6 +3,7 @@ import logging from '../../config/logging';
 import mongoose from 'mongoose';
 import Category from '../../models/category';
 import User from '../../models/user';
+import category from '../../models/category';
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
@@ -55,40 +56,32 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const editIncomeCategoryInUser = async (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Update Spent route called');
-
+const read = (req: Request, res: Response, next: NextFunction) => {
     const _id = req.params.userID;
-    const data = new Category({
-        oldName: req.body.oldName,
-        name: req.body.name,
-        budget: req.body.budget
-    });
+    const categoryID = req.params.categoryID;
+    logging.info(`Incoming read for category with name ${categoryID}`);
 
-    console.log('data is', data);
-    User.findById(_id, 'income')
+    User.findById(_id)
         .exec()
         .then((user) => {
             if (user) {
-                user.incomeCategory.map(function (e) {
-                    User.updateOne(
-                        { _id: _id },
-                        {
-                            $set: {
-                                'incomeCategory.$[el].name': data.name,
-                                'incomeCategory.$[el].budget': data.budget,
-                                'incomeCategory.$[el].remain': { $subtract: [data.budget, 'incomeCategory.$[el].spent'] }
+                user.category.map(function (e) {
+                    if (e._id === categoryID) {
+                        return res.status(200).json({
+                            payload: {
+                                data: e
                             }
-                        },
-                        {
-                            arrayFilters: [{ 'el.name': data.oldName }],
-                            new: true
-                        }
-                    ).exec();
+                        });
+                    }
                 });
+                // return res.status(200).json({
+                //     payload: {
+                //         data: user
+                //     }
+                // });
             } else {
-                return res.status(401).json({
-                    message: 'NOT FOUND'
+                return res.status(404).json({
+                    error: 'User not found.'
                 });
             }
         })
@@ -96,13 +89,13 @@ const editIncomeCategoryInUser = async (req: Request, res: Response, next: NextF
             logging.error(error.message);
 
             return res.status(500).json({
-                message: error.message
+                error: error.message
             });
         });
 };
 
 const addSpent = async (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Update Spent route called');
+    logging.info('Add Spent route called');
 
     const _id = req.params.userID;
     const data = new Category({
@@ -161,4 +154,65 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, addSpent };
+const updateSpent = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Update Spent route called');
+
+    const _id = req.params.userID;
+    var changedCategoryOldSpent = 0;
+    const data = new Category({
+        name: req.body.name,
+        spent: req.body.spent,
+        oldAmount: req.body.oldAmount,
+        oldSpent: req.body.oldSpent,
+        oldName: req.body.oldName
+    });
+
+    console.log('data is', data);
+    User.findById(_id, 'category')
+        .exec()
+        .then((user) => {
+            if (user) {
+                if (data.oldName === data.name) {
+                    User.updateOne(
+                        { _id: _id },
+                        { $set: { 'category.$[el].spent': data.oldSpent - data.oldAmount + data.spent } },
+                        {
+                            arrayFilters: [{ 'el.name': data.name }],
+                            new: true
+                        }
+                    ).exec();
+                } else {
+                    {
+                        user.category.map(function (e) {
+                            if (e.name === data.name) {
+                                console.log('Now looking at: ', e.name);
+                                changedCategoryOldSpent = e.spent;
+                                console.log('OldCategorySpentIs: ', changedCategoryOldSpent);
+                                User.updateOne(
+                                    { _id: _id },
+                                    { $set: { 'category.$[el].spent': changedCategoryOldSpent + data.spent, 'category.$[old].spent': data.oldSpent - data.spent } },
+                                    {
+                                        arrayFilters: [{ 'el.name': data.name }, { 'old.name': data.oldName }],
+                                        multi: true
+                                    }
+                                ).exec();
+                            }
+                        });
+                    }
+                }
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+export default { create, read, addSpent, updateSpent };
