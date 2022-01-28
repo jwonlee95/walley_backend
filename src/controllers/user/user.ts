@@ -29,15 +29,14 @@ const validate = (req: Request, res: Response, next: NextFunction) => {
 const create = (req: Request, res: Response, next: NextFunction) => {
     logging.info('Attempting to register user ...');
 
-    let { uid, name, expense, income, balance } = req.body;
+    let { uid, name, transaction, balance } = req.body;
     let fire_token = res.locals.fire_token;
 
     const user = new User({
         _id: new mongoose.Types.ObjectId(),
         uid,
         name,
-        expense,
-        income,
+        transaction,
         balance
     });
 
@@ -109,30 +108,9 @@ const read = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const readAll = (req: Request, res: Response, next: NextFunction) => {
-    logging.info('Readall route called');
-
-    User.find()
-        .exec()
-        .then((users) => {
-            return res.status(200).json({
-                count: users.length,
-                users: users
-            });
-        })
-        .catch((error) => {
-            logging.error(error.message);
-
-            return res.status(500).json({
-                message: error.message
-            });
-        });
-};
-
 export default {
     validate,
     create,
     login,
-    read,
-    readAll
+    read
 };

@@ -4,21 +4,14 @@ import { IUser } from '../interfaces';
 const UserSchema: Schema = new Schema({
     uid: { type: String, unique: true },
     name: { type: String },
-    expense: [
+    transaction: [
         {
-            category: { type: String, required: true },
-            description: { type: String },
+            category: { type: String },
+            type: { type: String, required: true },
+            description: { type: String, required: true },
+            date: { type: Date, required: true },
             amount: { type: Number, required: true, default: 0 },
-            createdAt: { type: Date },
-            updatedAt: { type: Date, default: now }
-        }
-    ],
-    income: [
-        {
-            description: { type: String },
-            amount: { type: Number, required: true, default: 0 },
-            createdAt: { type: Date },
-            updatedAt: { type: Date }
+            memo: { type: String, default: '' }
         }
     ],
     subscription: [
