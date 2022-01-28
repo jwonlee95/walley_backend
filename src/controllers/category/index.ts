@@ -15,7 +15,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         color: req.body.color,
         name: req.body.name,
         budget: req.body.budget,
-        remain: req.body.budget
+        spent: req.body.spent
     });
 
     console.log('data is', data);
@@ -106,11 +106,11 @@ const addSpent = async (req: Request, res: Response, next: NextFunction) => {
     var exist = false;
 
     console.log('data is', data);
-    User.findById(_id, 'expense')
+    User.findById(_id, 'transaction')
         .exec()
         .then((user) => {
             if (user) {
-                user.expense.map(function (e) {
+                user.transaction.map(function (e) {
                     if (e.category === data.name) {
                         exist = true;
                     }

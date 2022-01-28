@@ -1,25 +1,18 @@
 import { Document } from 'mongoose';
 
-interface IExpense extends Document {
+interface ITransaction extends Document {
     category: string;
-    description?: string;
+    type: string;
+    description: string;
+    date: Date;
     amount: number;
-    updatedAt: Date;
-}
-
-interface IIncome extends Document {
-    category: string;
-    description?: string;
-    amount: number;
-    updatedAt: Date;
+    memo?: string;
 }
 
 interface IUser extends Document {
     uid: string;
     name: string;
-
-    expense: IExpense[];
-    income: IIncome[];
+    transaction: ITransaction[];
     balace: number;
     subscription: ISubscription[];
     category: ICategory[];
@@ -42,4 +35,4 @@ interface ICategory extends Document {
     spent: number;
     remain: number;
 }
-export { IExpense, IIncome, IUser, ISubscription, ICategory };
+export { ITransaction, IUser, ISubscription, ICategory };

@@ -1,11 +1,11 @@
 import http from 'http';
 import express from 'express';
 import logging from './config/logging';
-import expenseRoutes from './routes/expense';
+import transactionRoutes from './routes/transaction';
 import mongoose from 'mongoose';
 import firebaseAdmin from 'firebase-admin';
 import userRoutes from './routes/user';
-import incomeRoutes from './routes/income';
+
 import subscriptionRoutes from './routes/subscription';
 import categoryRoutes from './routes/category';
 import dotenv from 'dotenv';
@@ -75,8 +75,7 @@ app.use((req, res, next) => {
 
 /** Routes go here */
 app.use('/users', userRoutes);
-app.use('/api/expense', expenseRoutes);
-app.use('/api/income', incomeRoutes);
+app.use('/api/transaction', transactionRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/category', categoryRoutes);
 
