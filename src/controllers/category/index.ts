@@ -1,9 +1,7 @@
-import e, { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import logging from '../../config/logging';
-import mongoose from 'mongoose';
 import Category from '../../models/category';
 import User from '../../models/user';
-import category from '../../models/category';
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update route called');
