@@ -55,16 +55,16 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const edit = async (req: Request, res: Response, next: NextFunction) => {
     logging.info('Update edit transaction route called');
-
     const _id = req.params.userID;
-    const expenseID = req.params.expenseID;
-    const data = new Transaction({
+    const transactionID = req.params.transactionID;
+    const data = {
         category: req.body.category,
-        description: req.body.description,
-        amount: req.body.amount,
         type: req.body.type,
-        date: req.body.date
-    });
+        description: req.body.description,
+        date: req.body.date,
+        amount: req.body.amount,
+        memo: req.body.memo
+    };
 
     console.log('data is', data);
     User.findById(_id, 'transaction')
@@ -76,19 +76,45 @@ const edit = async (req: Request, res: Response, next: NextFunction) => {
                         { _id: _id },
                         {
                             $set: {
-                                'transaction.$[el].category': data.category,
-                                'transaction.$[el].description': data.description,
-                                'transaction.$[el].amount': data.amount,
-                                'transaction.$[el].type': data.type,
-                                'transaction.$[el].date': data.date
+                                'transaction.$[el].category': req.body.category,
+                                'transaction.$[el].type': req.body.type,
+                                'transaction.$[el].description': req.body.description,
+                                'transaction.$[el].date': req.body.date,
+                                'transaction.$[el].amount': req.body.amount,
+                                'transaction.$[el].memo': req.body.memo
                             }
                         },
                         {
-                            arrayFilters: [{ 'el._id': expenseID }],
+                            arrayFilters: [{ 'el._id': transactionID }],
                             new: true
                         }
                     ).exec();
                 });
+                user.save()
+                    .then(() => {
+                        logging.info(`User with id ${_id} updated`);
+                        const data = {
+                            category: req.body.category,
+                            type: req.body.type,
+                            description: req.body.description,
+                            date: req.body.date,
+                            amount: req.body.amount,
+                            memo: req.body.memo,
+                            _id: transactionID
+                        };
+                        return res.status(201).json({
+                            payload: {
+                                data: data
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        logging.error(error.message);
+
+                        return res.status(500).json({
+                            message: error.message
+                        });
+                    });
             } else {
                 return res.status(401).json({
                     message: 'NOT FOUND'
