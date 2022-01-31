@@ -130,4 +130,46 @@ const edit = async (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { create, edit };
+const deleteTransaction = async (req: Request, res: Response, next: NextFunction) => {
+    logging.info('Delete transaction route called');
+
+    const _id = req.params.userID;
+    const transactionID = req.params.transactionID;
+
+    var ObjectId = require('mongoose').Types.ObjectId;
+
+    User.findById(_id, 'transaction')
+        .exec()
+        .then((user) => {
+            if (user) {
+                User.updateOne(
+                    { _id: _id },
+                    {
+                        $pull: {
+                            transaction: { _id: transactionID }
+                        }
+                    }
+                ).exec();
+                user.save().then(() => {
+                    return res.status(201).json({
+                        payload: {
+                            data: transactionID
+                        }
+                    });
+                });
+            } else {
+                return res.status(401).json({
+                    message: 'NOT FOUND'
+                });
+            }
+        })
+        .catch((error) => {
+            logging.error(error.message);
+
+            return res.status(500).json({
+                message: error.message
+            });
+        });
+};
+
+export default { create, edit, deleteTransaction };
