@@ -171,24 +171,29 @@ const updateSpent = async (req: Request, res: Response, next: NextFunction) => {
         .then((user) => {
             if (user) {
                 if (data.oldName === data.name) {
-                    User.updateOne(
-                        { _id: _id },
-                        { $set: { 'category.$[el].spent': data.oldSpent - data.oldAmount + data.spent } },
-                        {
-                            arrayFilters: [{ 'el.name': data.name }],
-                            new: true
+                    user.category.map(function (e) {
+                        if (e.name === data.oldName) {
+                            changedCategoryOldSpent = e.spent;
+                            User.updateOne(
+                                { _id: _id },
+                                { $set: { 'category.$[el].spent': changedCategoryOldSpent - data.oldAmount + data.spent } },
+                                {
+                                    arrayFilters: [{ 'el.name': data.name }],
+                                    new: true
+                                }
+                            ).exec();
                         }
-                    ).exec();
+                    });
                 } else {
                     {
                         user.category.map(function (e) {
-                            if (e.name === data.name) {
+                            if (e.name === data.oldName) {
                                 console.log('Now looking at: ', e.name);
                                 changedCategoryOldSpent = e.spent;
                                 console.log('OldCategorySpentIs: ', changedCategoryOldSpent);
                                 User.updateOne(
                                     { _id: _id },
-                                    { $set: { 'category.$[el].spent': changedCategoryOldSpent + data.spent, 'category.$[old].spent': data.oldSpent - data.spent } },
+                                    { $set: { 'category.$[el].spent': data.oldSpent + data.spent, 'category.$[old].spent': changedCategoryOldSpent - data.spent } },
                                     {
                                         arrayFilters: [{ 'el.name': data.name }, { 'old.name': data.oldName }],
                                         multi: true
